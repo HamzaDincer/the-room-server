@@ -1,42 +1,26 @@
 //Loading dependencies & initializing express
-var os = require('os'); //for operating system-related utility methods and properties
-var express = require('express'); 
-var app = express();
-const path = require('path');
-var http = require('http');//for creating http server
-const {v4: uuidV4} = require('uuid');
-
-//For signalling in WebRTC
-var socketIO = require('socket.io');
-
-
-app.set('view engine', 'ejs'); // Tell Express we are using EJS
-app.use(express.static('public')); //Define the folder which contains the CSS and JS for the fontend
-
-//Define a route 
-app.get("/", function(req, res){
-    //Render a view (located in the directory views/) on this route
-    res.redirect(`/${uuidV4()}`)
+const app = require('express')(); 
+const http = require('http');//for creating http server
+const { v4: uuidv4 } = require('uuid');
+const cors = require("cors");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
 });
-
-// If they join a specific room, then render that room
-app.get('/:room', (req, res) => {
-    res.render('room', {roomId: req.params.room})
-});
-
-
-//Initialize http server and associate it with express
-var server = http.createServer(app);
-
-
-//Initialize socket.io
-var io = socketIO(server);
 
 // When there is an incoming socket connection from a client
 io.on('connection', socket => {
+    console.log(`User with socket id ${socket.id} has connected`);
 
     // When receive message from 'join-room' channel in the socket.
     socket.on('join-room', (roomId, userId) => {
+
+        // When a new room is created
+        socket.emit('room-created', roomId);
 
         // make socket join the room with the roomID
         socket.join(roomId)  ;
@@ -57,8 +41,7 @@ io.on('connection', socket => {
 
 });
 
-
-var srv = server.listen(8000 , ()=>{
+const srv = server.listen(8000 , ()=>{
     console.log("Server running on port 8000");
 })
 
