@@ -6,6 +6,8 @@ const cors = require("cors");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
+const rooms = {};
+
 const io = new Server(server, {
   cors: {
     origin: "*",
