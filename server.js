@@ -38,6 +38,13 @@ io.on('connection', socket => {
         // Log that a user connected to a room
         console.log("User ("+userId+") connected to room (" + roomId + ")" ) ;
 
+
+        // Listen for chat messages from this socket
+        socket.on('chat-message', ({ message, name }) => {
+          // Broadcast the message to all other sockets in the room
+          socket.broadcast.to(roomId).emit('chat-message', { name, message });
+          console.log(`Received chat message: ${message} from ${name}`);
+        });
         // When the socket disconnects (ie. close the window)
         socket.on('disconnect', () => {
             console.log("User ("+userId+") disconnected from room (" + roomId + ")" ) ;
