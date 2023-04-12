@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const cors = require("cors");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -22,15 +23,15 @@ io.on('connection', socket => {
         // When a new room is created
         socket.emit('room-created', roomId);
 
-        socket.on('caption', (roomId, userId, caption) => {
-          io.to(roomId).emit('caption-update', userId, caption);
-        });
+        // socket.on('caption', (roomId, userId, caption) => {
+        //   io.to(roomId).emit('caption-update', userId, caption);
+        // });
 
         // make socket join the room with the roomID
         socket.join(roomId)  ;
 
         // broadcast everyone except the user itself that the user is connected
-        socket.broadcast.to(roomId).emit('user-connected', userId) ;
+        socket.broadcast.emit('user-connected', userId) ;
 
         // Log that a user connected to a room
         console.log("User ("+userId+") connected to room (" + roomId + ")" ) ;
@@ -38,7 +39,7 @@ io.on('connection', socket => {
         // When the socket disconnects (ie. close the window)
         socket.on('disconnect', () => {
             console.log("User ("+userId+") disconnected from room (" + roomId + ")" ) ;
-            socket.broadcast.to(roomId).emit('user-disconnected', userId)
+            socket.broadcast.emit('user-disconnected', userId)
         });
         
     }) ;
