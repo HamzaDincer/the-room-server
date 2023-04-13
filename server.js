@@ -57,8 +57,28 @@ io.on('connection', socket => {
         });
 
         
-        
     }) ;
+
+    socket.on("create-room", ({ roomName, userName }) => {
+      // Check if the room already exists
+      if (rooms[roomName]) {
+        socket.emit("create-room-error", "Room already exists");
+        return;
+      }
+  
+      // Create a new room and add the user as the owner
+      rooms[roomName] = {
+        owner: userName,
+        participants: [socket.id],
+      };
+  
+      // Join the room and let the user know they were successful
+      socket.join(roomName);
+      socket.emit("create-room-success", roomName);
+  
+      console.log(`Room ${roomName} created by ${userName}`);
+      console.log(rooms);
+    })
 
 });
 
