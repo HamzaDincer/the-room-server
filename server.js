@@ -25,10 +25,6 @@ io.on('connection', socket => {
         // When a new room is created
         socket.emit('room-created', roomId);
 
-        // socket.on('caption', (roomId, userId, caption) => {
-        //   io.to(roomId).emit('caption-update', userId, caption);
-        // });
-
         // make socket join the room with the roomID
         socket.join(roomId)  ;
 
