@@ -45,11 +45,18 @@ io.on('connection', socket => {
           socket.broadcast.to(roomId).emit('chat-message', { name, message });
           console.log(`Received chat message: ${message} from ${name}`);
         });
+
+        socket.on('caption-message', (data) => {
+          // Broadcast the message to all connected clients
+          socket.broadcast.emit('caption-message', data.message);
+        });
         // When the socket disconnects (ie. close the window)
         socket.on('disconnect', () => {
             console.log("User ("+userId+") disconnected from room (" + roomId + ")" ) ;
             socket.broadcast.emit('user-disconnected', userId)
         });
+
+        
         
     }) ;
 
